@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Лабораторна робота №2: Змінні та оператори в JavaScript</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        button { margin: 10px 0; padding: 10px; }
+        .output { margin: 10px 0; padding: 10px; border: 1px solid #ccc; background: #f9f9f9; }
+        h2 { color: #333; }
+    </style>
+</head>
+<body>
+    <h1>Лабораторна робота №2</h1>
+    <p>Студент: Борбулевич Богдан Іванович, №2</p>
+
+    <h2>Завдання 1: Область видимості змінних</h2>
+    <button id="btn1">Виконати завдання 1</button>
+    <div id="output1" class="output"></div>
+
+    <h2>Завдання 2: Взаємодія з користувачем (confirm)</h2>
+    <button id="btn2">Виконати завдання 2</button>
+    <div id="output2" class="output"></div>
+
+    <h2>Завдання 3: Перевірка парності числа</h2>
+    <button id="btn3">Виконати завдання 3</button>
+    <div id="output3" class="output"></div>
+
+    <script type="module">
+        // Глобальна змінна для завдання 1
+        let userName = 'Богдан';
+
+        // Завдання 1: Область видимості
+        function task1() {
+            // Симулюємо введення (замість prompt, для демонстрації фіксоване значення)
+            const inputName = prompt('Введіть інше ім\'я:') || 'Інше ім\'я з prompt';
+            
+            if (true) {  // Блок if
+                let userName = inputName;  // Блочна змінна, не впливає на глобальну
+                console.log('Всередині блоку if (блочна змінна):', userName);
+            }
+            
+            console.log('Глобальна змінна після блоку:', userName);
+            
+            const output = document.getElementById('output1');
+            output.innerHTML = `
+                <p><strong>Вивід у консоль (F12 > Console):</strong></p>
+                <p>Всередині блоку if: "${inputName}"</p>
+                <p>Глобальна змінна: "${userName}"</p>
+                <p><em>Пояснення: let має блочну область видимості, тому змінна всередині if не перезаписує глобальну. Глобальна залишається 'Богдан'.</em></p>
+            `;
+        }
+
+        // Завдання 2: Запит імені, віку та confirm
+        function task2() {
+            const name = prompt('Введіть ваше ім\'я:') || 'John';
+            const age = prompt('Введіть ваш вік:') || '20';
+            
+            const message = `Hello, ${name}! Your age is ${age}. Continue?`;
+            const isContinue = confirm(message);
+            
+            if (isContinue) {
+                alert('Welcome!');
+                document.getElementById('output2').textContent = 'Користувач натиснув "OK" → Виведено "Welcome!"';
+            } else {
+                alert('Goodbye!');
+                document.getElementById('output2').textContent = 'Користувач натиснув "Cancel" → Виведено "Goodbye!"';
+            }
+        }
+
+        // Завдання 3: Перевірка парності
+        function task3() {
+            const numberStr = prompt('Введіть число:');
+            const number = parseInt(numberStr);
+            
+            if (isNaN(number)) {
+                alert('Введіть коректне число!');
+                return;
+            }
+            
+            const isEven = number % 2 === 0;
+            const message = isEven ? 'Number is even' : 'Number is odd';
+            alert(message);
+            
+            document.getElementById('output3').innerHTML = `
+                <p>Введене число: ${number}</p>
+                <p>Результат: ${message}</p>
+                <p><em>Пояснення: Використано оператор % (залишок від ділення на 2). Якщо 0 — парне.</em></p>
+            `;
+        }
+
+        // Обробники подій
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('btn1').addEventListener('click', task1);
+            document.getElementById('btn2').addEventListener('click', task2);
+            document.getElementById('btn3').addEventListener('click', task3);
+        });
+    </script>
+</body>
+</html>

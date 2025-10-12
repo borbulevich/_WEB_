@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Лабораторна робота №3: Функції в JavaScript</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        button { margin: 10px 0; padding: 10px; }
+        .output { margin: 10px 0; padding: 10px; border: 1px solid #ccc; background: #f9f9f9; }
+        h2 { color: #333; }
+        code { background: #eee; padding: 2px 4px; font-family: monospace; }
+    </style>
+</head>
+<body>
+    <h1>Лабораторна робота №3</h1>
+    <p>Студент: Борбулевич Богдан Іванович, №2</p>
+
+    <h2>Завдання 1: Таймер з колбеком (стрілкова функція)</h2>
+    <button id="btn1">Запустити таймер</button>
+    <div id="output1" class="output"></div>
+
+    <h2>Завдання 2: Калькулятор з операціями</h2>
+    <button id="btn2">Виконати обчислення</button>
+    <div id="output2" class="output"></div>
+
+    <h2>Завдання 3: Лічильник кліків (замикання)</h2>
+    <button id="btn3">Створити та протестувати лічильник</button>
+    <div id="output3" class="output"></div>
+
+    <script type="module">
+        // Завдання 1: startGreetingTimer з колбеком (стрілочна функція)
+        function startGreetingTimer(message, seconds, callback) {
+            setTimeout(() => {
+                alert(message);
+                callback();  // Викликаємо колбек
+            }, seconds * 1000);
+        }
+
+        function task1() {
+            const output = document.getElementById('output1');
+            output.innerHTML = '<p>Таймер запущено. Повідомлення з\'явиться через 3 секунди.</p>';
+            
+            // Стрілкова функція як колбек
+            const arrowCallback = () => alert('Time is up!');
+            
+            startGreetingTimer('Привіт, Богдане! Час минув.', 3, arrowCallback);
+            
+            setTimeout(() => {
+                output.innerHTML += '<p><em>Пояснення: setTimeout використовує асинхронний виклик. Стрілкова функція як колбек виконується після таймера. Використано параметри (message, seconds) та аргументи.</em></p>';
+            }, 3500);
+        }
+
+        // Завдання 2: calculate та showResult
+        function calculate(a, b, operation) {
+            switch (operation) {
+                case '+': return a + b;
+                case '-': return a - b;
+                case '*': return a * b;
+                case '/': return b !== 0 ? a / b : 'Ділення на 0 неможливе!';
+                default: return 'Invalid operation';
+            }
+        }
+
+        function showResult() {
+            const a = parseFloat(prompt('Введіть перше число (a):')) || 0;
+            const b = parseFloat(prompt('Введіть друге число (b):')) || 0;
+            const operation = prompt('Введіть операцію (+, -, *, /):') || '+';
+            
+            const result = calculate(a, b, operation);
+            alert(`Результат: ${result}`);
+            
+            const output = document.getElementById('output2');
+            output.innerHTML = `
+                <p>a = ${a}, b = ${b}, операція = "${operation}"</p>
+                <p>Результат: <code>${result}</code></p>
+                <p><em>Пояснення: Функція calculate використовує switch для return значення. showResult читає аргументи через prompt (параметри функції) і блочний scope (let локальні змінні).</em></p>
+            `;
+        }
+
+        // Завдання 3: createClickCounter (замикання)
+        function createClickCounter() {
+            let count = 0;  // Приватна змінна (замикання)
+            return function() {
+                count++;
+                console.log(`Кількість кліків: ${count}`);
+                return count;
+            };
+        }
+
+        function task3() {
+            const counter = createClickCounter();  // Створюємо лічильник
+            
+            const output = document.getElementById('output3');
+            output.innerHTML = '<p>Лічильник створено. Викликаємо 5 разів:</p><ul id="counterList"></ul>';
+            const list = document.getElementById('counterList');
+            
+            for (let i = 1; i <= 5; i++) {
+                const value = counter();
+                const li = document.createElement('li');
+                li.textContent = `Виклик ${i}: ${value}`;
+                list.appendChild(li);
+            }
+            
+            output.innerHTML += '<p><em>Пояснення: Замикання — внутрішня функція "пам\'ятає" count з зовнішньої області. Кожен виклик збільшує та виводить у консоль (F12 > Console).</em></p>';
+        }
+
+        // Обробники подій
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('btn1').addEventListener('click', task1);
+            document.getElementById('btn2').addEventListener('click', showResult);
+            document.getElementById('btn3').addEventListener('click', task3);
+        });
+    </script>
+</body>
+</html>
