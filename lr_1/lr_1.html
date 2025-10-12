@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Лабораторна робота №1: Основи JavaScript</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        button { margin: 10px 0; padding: 10px; }
+        .output { margin: 10px 0; padding: 10px; border: 1px solid #ccc; }
+        .even { color: green; }
+        .odd { color: red; }
+        #studentsList { list-style-type: none; padding: 0; }
+        #studentsList li { margin: 5px 0; padding: 5px; background: #f9f9f9; border-left: 3px solid #007bff; }
+    </style>
+</head>
+<body>
+    <h1>Лабораторна робота №1</h1>
+    <p>Студент: Борбулевич Богдан Іванович, №2</p>
+
+    <h2>Завдання 1: Перевірка парності числа</h2>
+    <button id="btn1">Перевірити парність числа 2</button>
+    <div id="output1" class="output"></div>
+
+    <h2>Завдання 2: Генерація пароля</h2>
+    <button id="btn2">Згенерувати пароль</button>
+    <div id="password" class="output"></div>
+
+    <h2>Завдання 3: Середнє арифметичне оцінок</h2>
+    <button id="btn3">Ввести оцінки та обчислити середнє</button>
+    <div id="result2"></div> <!-- Динамічно створюється div з id="2" -->
+
+    <h2>Завдання 4: Введення даних студентів</h2>
+    <button id="btn4">Ввести кількість студентів</button>
+    <div id="studentsList" class="output"></div> <!-- Додано для виводу на екран -->
+
+    <script type="module">
+        // Завдання 1: Функція перевірки парності
+        function checkEvenOdd() {
+            const number = 2; // Номер у журналі
+            const output = document.getElementById('output1');
+            const message = document.createElement('p');
+            message.textContent = `Число ${number} є ${number % 2 === 0 ? 'парним' : 'непарним'}.`;
+            message.className = number % 2 === 0 ? 'even' : 'odd';
+            output.appendChild(message);
+        }
+
+        // Завдання 2: Генерація пароля
+        function generatePassword() {
+            const name = 'Богдан'; // Ім'я
+            const number = 2; // Номер
+            const firstLetters = name.substring(0, 3); // Перші 3 літери
+            const multiplied = number * 2; // Номер * 2
+            const password = `${firstLetters}${multiplied}`;
+            const div = document.getElementById('password');
+            div.textContent = `Згенерований пароль: ${password}`;
+        }
+
+        // Завдання 3: Обчислення середнього
+        function averageGrades() {
+            let grade1 = parseFloat(prompt('Введіть першу оцінку:'));
+            let grade2 = parseFloat(prompt('Введіть другу оцінку:'));
+            let grade3 = parseFloat(prompt('Введіть третю оцінку:'));
+
+            // Перевірка на валідність
+            if (isNaN(grade1) || isNaN(grade2) || isNaN(grade3)) {
+                alert('Будь ласка, введіть числові значення для оцінок.');
+                return;
+            }
+
+            const average = (grade1 + grade2 + grade3) / 3;
+            const resultDiv = document.createElement('div');
+            resultDiv.id = '2'; // ID дорівнює номеру
+            resultDiv.textContent = `Середнє арифметичне: ${average.toFixed(2)}`;
+            resultDiv.className = 'output';
+            document.body.appendChild(resultDiv); // Додаємо динамічно
+        }
+
+        // Завдання 4: Введення студентів (оновлено з виводом на екран)
+        function inputStudents() {
+            const count = parseInt(prompt('Введіть кількість студентів групи:'));
+            if (isNaN(count) || count <= 0) {
+                alert('Будь ласка, введіть позитивне число.');
+                return;
+            }
+
+            // Очищуємо список перед новим введенням
+            const list = document.getElementById('studentsList');
+            list.innerHTML = '<h3>Список студентів:</h3><ul id="studentsUl"></ul>';
+            const ul = document.getElementById('studentsUl');
+
+            for (let i = 1; i <= count; i++) {
+                const studentName = prompt(`Введіть ПІБ студента №${i}:`);
+                if (studentName) {
+                    // Вивід у alert (як у завданні)
+                    alert(`Студент №${i}: ${studentName}`);
+                    // Додаємо на екран
+                    const li = document.createElement('li');
+                    li.textContent = `Студент №${i}: ${studentName}`;
+                    ul.appendChild(li);
+                } else {
+                    alert(`Дані для студента №${i} не введено.`);
+                    // Опціонально додати порожній запис
+                    const li = document.createElement('li');
+                    li.textContent = `Студент №${i}: (не вказано)`;
+                    li.style.color = 'gray';
+                    ul.appendChild(li);
+                }
+            }
+        }
+
+        // Додаємо обробники подій (сучасний спосіб)
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('btn1').addEventListener('click', checkEvenOdd);
+            document.getElementById('btn2').addEventListener('click', generatePassword);
+            document.getElementById('btn3').addEventListener('click', averageGrades);
+            document.getElementById('btn4').addEventListener('click', inputStudents);
+        });
+    </script>
+</body>
+</html>
