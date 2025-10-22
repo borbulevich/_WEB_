@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Практична робота 1: Методи масивів у JavaScript</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        button { margin: 10px 0; padding: 10px; }
+        .output { margin: 10px 0; padding: 10px; border: 1px solid #ccc; background: #f9f9f9; }
+        h2 { color: #333; }
+        code { background: #eee; padding: 2px 4px; font-family: monospace; }
+        ul { list-style-type: none; }
+        li { margin: 5px 0; }
+    </style>
+</head>
+<body>
+    <h1>Практична робота 1</h1>
+    <p>Студент: Борбулевич Богдан Іванович, №2</p>
+
+    <h2>Завдання 3: Статистичний аналіз даних про працівників (reduce)</h2>
+    <button id="btn3-1">Обчислити середню зарплату</button>
+    <div id="output3-1" class="output"></div>
+
+    <button id="btn3-2">Знайти найдосвідченішого працівника</button>
+    <div id="output3-2" class="output"></div>
+
+    <h2>Завдання 4: Обробка даних про книги (reduce, sort)</h2>
+    <button id="btn4-1">Отримати непрочитані книги</button>
+    <div id="output4-1" class="output"></div>
+
+    <button id="btn4-2">Книги за автором (J.K. Rowling)</button>
+    <div id="output4-2" class="output"></div>
+
+    <button id="btn4-3">Топ-книги з рейтингом >4</button>
+    <div id="output4-3" class="output"></div>
+
+    <script type="module">
+        // Масив employees для завдання 3
+        const employees = [
+            { name: 'Іван Петренко', position: 'Розробник', salary: 50000, years: 5 },
+            { name: 'Марія Коваленко', position: 'Дизайнер', salary: 45000, years: 3 },
+            { name: 'Олег Сидоренко', position: 'Менеджер', salary: 60000, years: 7 },
+            { name: 'Анна Іваненко', position: 'Тестувальник', salary: 40000, years: 2 },
+            { name: 'Дмитро Шевченко', position: 'Аналізатор', salary: 55000, years: 4 }
+        ];
+
+        // getAverageSalary (reduce для суми / довжина)
+        function getAverageSalary() {
+            const totalSalary = employees.reduce((sum, emp) => sum + emp.salary, 0);
+            const average = totalSalary / employees.length;
+            console.log(`Середня зарплата: ${average.toFixed(2)} грн`);
+            return average;
+        }
+
+        // findMostExperiencedEmployee (reduce для max years)
+        function findMostExperiencedEmployee() {
+            const mostExperienced = employees.reduce((maxEmp, emp) => 
+                emp.years > maxEmp.years ? emp : maxEmp
+            );
+            console.log('Найдосвідченіший працівник:', mostExperienced);
+            return mostExperienced;
+        }
+
+        // Масив books для завдання 4
+        const books = [
+            { title: 'Harry Potter and the Philosopher\'s Stone', author: 'J.K. Rowling', year: 1997, rating: 4.7, isRead: true },
+            { title: 'The Hobbit', author: 'J.R.R. Tolkien', year: 1937, rating: 4.5, isRead: false },
+            { title: '1984', author: 'George Orwell', year: 1949, rating: 4.2, isRead: true },
+            { title: 'Harry Potter and the Chamber of Secrets', author: 'J.K. Rowling', year: 1998, rating: 4.8, isRead: false },
+            { title: 'The Great Gatsby', author: 'F. Scott Fitzgerald', year: 1925, rating: 4.1, isRead: true },
+            { title: 'To Kill a Mockingbird', author: 'Harper Lee', year: 1960, rating: 4.6, isRead: false },
+            { title: 'Pride and Prejudice', author: 'Jane Austen', year: 1813, rating: 4.3, isRead: true }
+        ];
+
+        // getUnreadBooks (filter)
+        function getUnreadBooks() {
+            const unread = books.filter(book => !book.isRead).map(book => book.title);
+            console.log('Непрочитані книги:', unread);
+            return unread;
+        }
+
+        // getBooksByAuthor (filter + sort by year asc)
+        function getBooksByAuthor(author) {
+            const authorBooks = books
+                .filter(book => book.author === author)
+                .sort((a, b) => a.year - b.year);
+            console.log(`Книги автора "${author}":`, authorBooks);
+            return authorBooks;
+        }
+
+        // getTopRatedBooks (filter rating >4 + sort by rating desc)
+        function getTopRatedBooks() {
+            const topBooks = books
+                .filter(book => book.rating > 4)
+                .sort((a, b) => b.rating - a.rating);
+            console.log('Топ-книги (рейтинг >4):', topBooks);
+            return topBooks;
+        }
+
+        // Обробники подій
+        document.addEventListener('DOMContentLoaded', () => {
+            // Завдання 3
+            document.getElementById('btn3-1').addEventListener('click', () => {
+                const avg = getAverageSalary();
+                const output = document.getElementById('output3-1');
+                output.innerHTML = `
+                    <p>Середня зарплата: <code>${avg.toFixed(2)} грн</code></p>
+                    <p><em>Пояснення: reduce сумує зарплати, ділимо на кількість. Перевірте консоль (F12).</em></p>
+                `;
+            });
+
+            document.getElementById('btn3-2').addEventListener('click', () => {
+                const emp = findMostExperiencedEmployee();
+                const output = document.getElementById('output3-2');
+                output.innerHTML = `
+                    <p>Найдосвідченіший: <code>${emp.name}, посада: ${emp.position}, досвід: ${emp.years} років</code></p>
+                    <p><em>Пояснення: reduce порівнює years і повертає об'єкт з max. Перевірте консоль.</em></p>
+                `;
+            });
+
+            // Завдання 4
+            document.getElementById('btn4-1').addEventListener('click', () => {
+                const unread = getUnreadBooks();
+                const output = document.getElementById('output4-1');
+                output.innerHTML = `
+                    <ul>${unread.map(title => `<li><code>${title}</code></li>`).join('')}</ul>
+                    <p><em>Пояснення: filter за !isRead, map для назв. Перевірте консоль.</em></p>
+                `;
+            });
+
+            document.getElementById('btn4-2').addEventListener('click', () => {
+                const authorBooks = getBooksByAuthor('J.K. Rowling');
+                const output = document.getElementById('output4-2');
+                output.innerHTML = `
+                    <ul>${authorBooks.map(book => `<li><code>${book.title} (${book.year})</code></li>`).join('')}</ul>
+                    <p><em>Пояснення: filter за автором, sort за year asc. Перевірте консоль.</em></p>
+                `;
+            });
+
+            document.getElementById('btn4-3').addEventListener('click', () => {
+                const topBooks = getTopRatedBooks();
+                const output = document.getElementById('output4-3');
+                output.innerHTML = `
+                    <ul>${topBooks.map(book => `<li><code>${book.title} (рейтинг: ${book.rating})</code></li>`).join('')}</ul>
+                    <p><em>Пояснення: filter >4, sort desc за rating. Перевірте консоль.</em></p>
+                `;
+            });
+        });
+    </script>
+</body>
+</html>

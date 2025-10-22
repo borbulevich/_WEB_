@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Лабораторна робота №4: Робота з об'єктами та масивами в JavaScript</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        button { margin: 10px 0; padding: 10px; }
+        .output { margin: 10px 0; padding: 10px; border: 1px solid #ccc; background: #f9f9f9; }
+        h2 { color: #333; }
+        code { background: #eee; padding: 2px 4px; font-family: monospace; }
+        ul { list-style-type: none; }
+        li { margin: 5px 0; }
+    </style>
+</head>
+<body>
+    <h1>Лабораторна робота №4</h1>
+    <p>Студент: Борбулевич Богдан Іванович, №2</p>
+
+    <h2>Завдання 1: Робота з об'єктами</h2>
+    <button id="btn1">Виконати завдання 1</button>
+    <div id="output1" class="output"></div>
+
+    <h2>Завдання 2: Робота з масивами та об'єктами</h2>
+    <button id="btn2">Виконати завдання 2</button>
+    <div id="output2" class="output"></div>
+
+    <h2>Завдання 3: Робота з методами масивів</h2>
+    <button id="btn3">Виконати завдання 3</button>
+    <div id="output3" class="output"></div>
+
+    <h2>Завдання 4: Взаємодія з користувачем</h2>
+    <button id="btn4">Додати нову книгу</button>
+    <div id="output4" class="output"></div>
+
+    <h2>Додаткові завдання</h2>
+    <button id="btn5">Mark as Read & Calculate Average Year</button>
+    <div id="output5" class="output"></div>
+
+    <script type="module">
+        // Глобальний масив library (ініціалізуємо в завданні 2)
+        let library = [];
+
+        // Завдання 1: Об'єкт book з методом bookInfo
+        function task1() {
+            const book = {
+                title: "Harry Potter and the Sorcerer's Stone",
+                author: "J.K. Rowling",
+                year: 1997,
+                isRead: true,
+                bookInfo() {
+                    const readStatus = this.isRead ? "Так" : "Ні";
+                    const info = `Назва: ${this.title}, Автор: ${this.author}, Рік видання: ${this.year}, Прочитана: ${readStatus}`;
+                    console.log(info);
+                    return info;
+                }
+            };
+
+            const output = document.getElementById('output1');
+            output.innerHTML = `<p><code>${book.bookInfo()}</code></p>`;
+
+            // Зміна isRead на протилежне
+            book.isRead = !book.isRead;
+            output.innerHTML += `<p><em>Після зміни isRead: <code>${book.bookInfo()}</code></em></p>
+                <p><strong>Пояснення:</strong> Об'єкт створено з властивостями. Метод bookInfo використовує this для доступу. Зміна властивості впливає на наступний виклик.</p>`;
+        }
+
+        // Завдання 2: Масив library та displayLibrary
+        function task2() {
+            // Ініціалізація library (якщо порожній)
+            if (library.length === 0) {
+                library = [
+                    {
+                        title: "Harry Potter and the Sorcerer's Stone",
+                        author: "J.K. Rowling",
+                        year: 1997,
+                        isRead: true,
+                        bookInfo() {
+                            const readStatus = this.isRead ? "Так" : "Ні";
+                            return `Назва: ${this.title}, Автор: ${this.author}, Рік видання: ${this.year}, Прочитана: ${readStatus}`;
+                        }
+                    },
+                    {
+                        title: "The Hobbit",
+                        author: "J.R.R. Tolkien",
+                        year: 1937,
+                        isRead: false,
+                        bookInfo() {
+                            const readStatus = this.isRead ? "Так" : "Ні";
+                            return `Назва: ${this.title}, Автор: ${this.author}, Рік видання: ${this.year}, Прочитана: ${readStatus}`;
+                        }
+                    },
+                    {
+                        title: "1984",
+                        author: "George Orwell",
+                        year: 1949,
+                        isRead: true,
+                        bookInfo() {
+                            const readStatus = this.isRead ? "Так" : "Ні";
+                            return `Назва: ${this.title}, Автор: ${this.author}, Рік видання: ${this.year}, Прочитана: ${readStatus}`;
+                        }
+                    }
+                ];
+            }
+
+            function displayLibrary() {
+                library.forEach(book => {
+                    console.log(book.bookInfo());
+                });
+            }
+
+            displayLibrary();
+
+            // Додавання нової книги push
+            library.push({
+                title: "The Great Gatsby",
+                author: "F. Scott Fitzgerald",
+                year: 1925,
+                isRead: false,
+                bookInfo() {
+                    const readStatus = this.isRead ? "Так" : "Ні";
+                    return `Назва: ${this.title}, Автор: ${this.author}, Рік видання: ${this.year}, Прочитана: ${readStatus}`;
+                }
+            });
+
+            displayLibrary();  // Знову виклик
+
+            const output = document.getElementById('output2');
+            output.innerHTML = '<h3>Початковий вивід (консоль):</h3><ul id="list1"></ul><h3>Після push (консоль):</h3><ul id="list2"></ul>';
+            const list1 = document.getElementById('list1');
+            const list2 = document.getElementById('list2');
+            library.slice(0, -1).forEach(book => {
+                const li = document.createElement('li');
+                li.innerHTML = `<code>${book.bookInfo()}</code>`;
+                list1.appendChild(li);
+            });
+            library.forEach(book => {
+                const li = document.createElement('li');
+                li.innerHTML = `<code>${book.bookInfo()}</code>`;
+                list2.appendChild(li);
+            });
+            output.innerHTML += '<p><em>Пояснення: Масив об\'єктів з методами. displayLibrary використовує forEach (цикл). push додає елемент.</em></p>';
+        }
+
+        // Завдання 3: Методи масивів
+        function task3() {
+            // Сортування за роком
+            library.sort((a, b) => a.year - b.year);
+            console.log("Відсортований за роком:", library);
+
+            // Filter: unreadBooks
+            const unreadBooks = library.filter(book => !book.isRead);
+            console.log("Непрочитані книги:", unreadBooks);
+
+            // Find: Книга Толкіна
+            const tolkienBook = library.find(book => book.author === "J.R.R. Tolkien");
+            console.log("Книга Толкіна:", tolkienBook);
+
+            const output = document.getElementById('output3');
+            output.innerHTML = `
+                <p><strong>Відсортований за роком:</strong></p>
+                <ul>${library.map(book => `<li><code>${book.bookInfo()}</code></li>`).join('')}</ul>
+                <p><strong>Непрочитані:</strong> ${unreadBooks.length > 0 ? unreadBooks.map(b => b.title).join(', ') : 'Немає'}</p>
+                <p><strong>Толкін:</strong> ${tolkienBook ? tolkienBook.title : 'Не знайдено'}</p>
+                <p><em>Пояснення: sort з arrow-функцією (a.year - b.year). filter повертає новий масив. find повертає перший елемент.</em></p>
+            `;
+        }
+
+        // Завдання 4: Взаємодія з користувачем
+        function task4() {
+            const title = prompt("Введіть назву книги:");
+            const author = prompt("Введіть автора:");
+            const year = parseInt(prompt("Введіть рік видання:"));
+            const isRead = confirm("Книга прочитана?");
+
+            if (title && author && !isNaN(year)) {
+                const newBook = {
+                    title,
+                    author,
+                    year,
+                    isRead,
+                    bookInfo() {
+                        const readStatus = this.isRead ? "Так" : "Ні";
+                        return `Назва: ${this.title}, Автор: ${this.author}, Рік видання: ${this.year}, Прочитана: ${readStatus}`;
+                    }
+                };
+                library.push(newBook);
+                console.log("Додано нову книгу:", newBook);
+
+                // Вивід оновленого списку
+                function displayLibrary() {
+                    library.forEach(book => console.log(book.bookInfo()));
+                }
+                displayLibrary();
+
+                const output = document.getElementById('output4');
+                output.innerHTML = `<p>Додано: <code>${newBook.bookInfo()}</code></p><ul>${library.map(book => `<li><code>${book.bookInfo()}</code></li>`).join('')}</ul>`;
+            } else {
+                alert("Некоректні дані!");
+            }
+        }
+
+        // Додаткові завдання
+        function task5() {
+            // Mark as Read (додаємо метод до всіх об'єктів, якщо немає)
+            library.forEach(book => {
+                if (!book.markAsRead) {
+                    book.markAsRead = function() {
+                        this.isRead = true;
+                        console.log(`${this.title} позначено як прочитану.`);
+                    };
+                }
+                book.markAsRead();  // Викликаємо для всіх
+            });
+
+            // calculateAverageYear
+            function calculateAverageYear() {
+                const totalYears = library.reduce((sum, book) => sum + book.year, 0);
+                return totalYears / library.length;
+            }
+
+            const avgYear = calculateAverageYear();
+            console.log("Середній рік:", avgYear);
+
+            const output = document.getElementById('output5');
+            output.innerHTML = `
+                <p><strong>Всі книги позначено як прочитані.</strong></p>
+                <p><strong>Середній рік видання:</strong> ${avgYear.toFixed(2)}</p>
+                <p><em>Пояснення: markAsRead — метод об'єкта (змінює isRead). calculateAverageYear використовує reduce для суми, ділення для середнього.</em></p>
+                <ul>${library.map(book => `<li><code>${book.bookInfo()}</code></li>`).join('')}</ul>
+            `;
+        }
+
+        // Обробники подій
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('btn1').addEventListener('click', task1);
+            document.getElementById('btn2').addEventListener('click', task2);
+            document.getElementById('btn3').addEventListener('click', task3);
+            document.getElementById('btn4').addEventListener('click', task4);
+            document.getElementById('btn5').addEventListener('click', task5);
+        });
+    </script>
+</body>
+</html>
