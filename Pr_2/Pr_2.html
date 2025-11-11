@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Практична робота №2: setTimeout() та setInterval()</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h2 { color: #333; }
+        input, button { margin: 5px; padding: 5px; }
+        #clock1, #clock2, #typewriter { font-family: monospace; font-size: 18px; border: 1px solid #ccc; padding: 10px; margin: 10px 0; min-height: 30px; }
+        .output { margin: 10px 0; padding: 10px; border: 1px solid #ccc; background: #f9f9f9; }
+    </style>
+</head>
+<body>
+    <h1>Практична робота №2</h1>
+    <p>Студент: Борбулевич Богдан Іванович, №2</p>
+
+    <!-- Завдання 1: Годинник з додаванням "0" -->
+    <h2>Завдання 1: Годинник з форматуванням (додає "0" для <10)</h2>
+    <div id="clock1">Час з'явиться тут</div>
+    <button id="startClock1">Запустити годинник</button>
+
+    <!-- Завдання 2: Годинник з закриттям через 30 сек -->
+    <h2>Завдання 2: Годинник (оновлення кожні 5 сек, закриття через 30 сек)</h2>
+    <div id="clock2">Час з'явиться тут</div>
+    <button id="startClock2">Запустити годинник (закриється через 30 сек)</button>
+
+    <!-- Завдання 3: Ефект друкарської машинки -->
+    <h2>Завдання 3: Ефект друкарської машинки</h2>
+    <input type="text" id="phraseInput" placeholder="Введіть фразу (або натисніть кнопку для дефолтної)">
+    <button id="startTypewriter">Запустити ефект</button>
+    <div id="typewriter"></div>
+
+    <script type="module">
+        // Функція для форматування часу (додає "0" якщо <10)
+        function formatTime(num) {
+            return num < 10 ? '0' + num : num;
+        }
+
+        // Завдання 1: Годинник з setTimeout
+        let clock1Interval;
+        document.getElementById('startClock1').addEventListener('click', () => {
+            document.getElementById('clock1').textContent = 'Годинник запущено...';
+            clock1Interval = setInterval(() => {
+                const now = new Date();
+                const time = `${formatTime(now.getHours())}:${formatTime(now.getMinutes())}:${formatTime(now.getSeconds())}`;
+                document.getElementById('clock1').textContent = time;
+            }, 1000);
+        });
+
+        // Завдання 2: Годинник з setInterval, закриття через 30 сек
+        let clock2Interval, closeTimeout;
+        document.getElementById('startClock2').addEventListener('click', () => {
+            let elapsed = 0;
+            document.getElementById('clock2').textContent = 'Годинник запущено (закриється через 30 сек)...';
+            clock2Interval = setInterval(() => {
+                const now = new Date();
+                const time = `${formatTime(now.getHours())}:${formatTime(now.getMinutes())}:${formatTime(now.getSeconds())}`;
+                document.getElementById('clock2').textContent = `${time} (Минуло: ${elapsed} сек)`;
+                elapsed += 5;
+            }, 5000); // Кожні 5 секунд
+
+            closeTimeout = setTimeout(() => {
+                alert('30 секунд минуло! Сторінка закривається.');
+                window.close(); // Закриває поточне вікно (якщо дозволено браузером)
+                // Якщо close() не працює (політика браузера), можна redirect: window.location.href = 'about:blank';
+            }, 30000); // 30 секунд
+        });
+
+        // Завдання 3: Ефект друкарської машинки з setInterval/setTimeout
+        document.getElementById('startTypewriter').addEventListener('click', () => {
+            let phrase = document.getElementById('phraseInput').value || 'Привіт! Це ефект друкарської машинки. Кожна буква з\'являється по черзі.';
+            let index = 0;
+            const typewriter = document.getElementById('typewriter');
+            typewriter.textContent = ''; // Очистити
+
+            // setInterval для набору по буквах (швидкість 100 мс)
+            const typeInterval = setInterval(() => {
+                if (index < phrase.length) {
+                    typewriter.textContent += phrase[index];
+                    index++;
+                } else {
+                    clearInterval(typeInterval); // Зупинити інтервал
+                    // setTimeout для "підсвічування" (курсор блимає 2 сек)
+                    const blinkTimeout = setTimeout(() => {
+                        typewriter.innerHTML += '<span style="animation: blink 1s infinite;">|</span>'; // CSS-анімація для |
+                        setTimeout(() => {
+                            typewriter.innerHTML = typewriter.textContent.replace(/<[^>]*>/g, ''); // Видалити курсор
+                        }, 2000);
+                    }, 500);
+                }
+            }, 100); // Швидкість набору
+        });
+        const style = document.createElement('style');
+        style.textContent = '@keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }';
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Практична робота №3</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h2 { color: #333; }
+        button { margin: 5px; padding: 8px; }
+        .output { margin: 10px 0; padding: 10px; border: 1px solid #ccc; background: #f9f9f9; font-family: monospace; }
+        input { margin: 5px; padding: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Практична робота №3</h1>
+    <p>Студент: Борбулевич Богдан Іванович, №2</p>
+
+    <!-- Приклад 1: Різниця між датами -->
+    <h2>Приклад 1: Розрахунок різниці між датами (до Нового року)</h2>
+    <button id="btn1">Обчислити різницю до Нового року</button>
+    <div id="output1" class="output"></div>
+
+    <!-- Приклад 2: Локальне форматування дати -->
+    <h2>Приклад 2: toLocaleString з options</h2>
+    <button id="btn2-en">Вивести дату англійською (en-GB)</button>
+    <button id="btn2-ru">Вивести дату російською (ru-RU)</button>
+    <button id="btn2-uk">Вивести дату українською (uk-UA)</button>
+    <div id="output2" class="output"></div>
+
+    <!-- Завдання 3: 13-е число на п'ятницю -->
+    <h2>Завдання 3: Місяці, де 13-е — п'ятниця (для 2023 року)</h2>
+    <input type="number" id="yearInput" value="2023" placeholder="Введіть рік">
+    <button id="btn3">Знайти місяці з 13-ю на п'ятницю</button>
+    <div id="output3" class="output"></div>
+
+    <script type="module">
+        // Приклад 1: Різниця між датами
+        document.getElementById('btn1').addEventListener('click', () => {
+            const today = new Date(); // Поточна дата
+            const newYear = new Date(today.getFullYear() + 1, 0, 1); // 1 січня наступного року
+
+            // Різниця в мілісекундах (getTime() або просто віднімання)
+            const diffMs = newYear - today; // Або newYear.getTime() - today.getTime()
+            const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24)); // Днів
+            const diffHours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)); // Годин
+            const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60)); // Хвилин
+            const diffSeconds = Math.floor((diffMs % (1000 * 60)) / 1000); // Секунд
+
+            document.getElementById('output1').innerHTML = `
+                <p>Поточна дата: ${today.toLocaleString()}</p>
+                <p>Новий рік: ${newYear.toLocaleString()}</p>
+                <p>Різниця (мс): ${diffMs}</p>
+                <p>До Нового року: ${diffDays} днів, ${diffHours} годин, ${diffMinutes} хвилин, ${diffSeconds} секунд</p>
+                <em>Пояснення: Використано віднімання Date для мілісекунд, потім конвертація в дні/години/хвилини/секунди.</em>
+            `;
+        });
+
+        // Приклад 2: Локальне форматування
+        function showDate(locale, options) {
+            const today = new Date();
+            const formatted = today.toLocaleString(locale, options);
+            return formatted;
+        }
+
+        const defaultOptions = {
+            weekday: 'long', // Повний день тижня
+            year: 'numeric', // Рік числом
+            month: 'long', // Повний місяць
+            day: 'numeric', // День числом
+            hour: '2-digit', // Години з 0
+            minute: '2-digit', // Хвилини з 0
+            second: '2-digit', // Секунди з 0
+            timeZoneName: 'short' // Назва часового поясу коротко
+        };
+
+        document.getElementById('btn2-en').addEventListener('click', () => {
+            const output = document.getElementById('output2');
+            output.innerHTML = `<p>Англійською (en-GB): ${showDate('en-GB', defaultOptions)}</p>`;
+        });
+
+        document.getElementById('btn2-ru').addEventListener('click', () => {
+            const output = document.getElementById('output2');
+            output.innerHTML += `<p>Російською (ru-RU): ${showDate('ru-RU', defaultOptions)}</p>`;
+        });
+
+        document.getElementById('btn2-uk').addEventListener('click', () => {
+            const output = document.getElementById('output2');
+            output.innerHTML += `<p>Українською (uk-UA): ${showDate('uk-UA', defaultOptions)}</p>
+            <em>Пояснення: toLocaleString з locale та options (наприклад, 'long' для повних назв). Змініть options для інших форматів.</em>`;
+        });
+
+        // Завдання 3: 13-е число на п'ятницю (getDay() === 5)
+        document.getElementById('btn3').addEventListener('click', () => {
+            const year = parseInt(document.getElementById('yearInput').value) || 2023;
+            let result = `Для ${year} року місяці з 13-ю на п'ятницю:\n`;
+            let found = false;
+
+            for (let month = 0; month < 12; month++) { // 0-11 місяці
+                const date = new Date(year, month, 13); // 13-е число місяця
+                if (date.getDay() === 5) { // 0=неділя, 5=п'ятниця
+                    const monthNames = ['Січень', 'Лютий', 'Березень', 'Квітень', 'Травень', 'Червень',
+                                        'Липень', 'Серпень', 'Вересень', 'Жовтень', 'Листопад', 'Грудень'];
+                    result += `- ${monthNames[month]} (день тижня: ${date.getDay()})\n`;
+                    found = true;
+                }
+            }
+
+            if (!found) {
+                result += 'Не знайдено таких місяців.';
+            }
+
+            document.getElementById('output3').innerHTML = `<pre>${result}</pre>
+            <em>Пояснення: Цикл по місяцях, new Date(year, month, 13). getDay() повертає 0-6 (5=п'ятниця).</em>`;
+        });
+    </script>
+</body>
+</html>
