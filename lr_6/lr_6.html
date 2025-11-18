@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Лабораторна робота №6</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1, h2 { color: #333; }
+        /* Стилі для вкладок */
+        .tabs { overflow: hidden; border: 1px solid #ccc; background-color: #f1f1f1; }
+        .tab { background-color: inherit; float: left; border: none; outline: none; cursor: pointer; padding: 14px 16px; transition: 0.3s; }
+        .tab:hover { background-color: #ddd; }
+        .tab.whiteborder { background-color: #ccc; }
+        .tabContent { display: none; padding: 6px 12px; border: 1px solid #ccc; border-top: none; }
+        .tabContent.show { display: block; }
+        .tabContent.hide { display: none; }
+        /* Стилі для CSS-генератора */
+        .generator { margin: 20px 0; }
+        .slider-row { margin: 10px 0; }
+        .slider-row label { display: inline-block; width: 150px; }
+        .preview { width: 200px; height: 200px; background: linear-gradient(to right, #f00, #0f0); margin: 20px 0; border: 2px solid #000; }
+        textarea { width: 100%; height: 150px; margin-top: 10px; font-family: monospace; }
+        select, input[type="range"], input[type="number"] { margin-left: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Лабораторна робота №6</h1>
+    <p>Студент: Борбулевич Богдан Іванович, №2</p>
+
+    <!-- Частина 1: Вкладки -->
+    <h2>Частина 1: Вкладки на сторінці</h2>
+    <div id="tabs" class="tabs">
+        <button class="tab whiteborder">Вкладка 1</button>
+        <button class="tab">Вкладка 2</button>
+        <button class="tab">Вкладка 3</button>
+    </div>
+    <div id="tabContent1" class="tabContent show">Вміст Вкладки 1: Це приклад контенту для першої вкладки.</div>
+    <div id="tabContent2" class="tabContent hide">Вміст Вкладки 2: Це приклад контенту для другої вкладки.</div>
+    <div id="tabContent3" class="tabContent hide">Вміст Вкладки 3: Це приклад контенту для третьої вкладки.</div>
+
+    <!-- Частина 2: CSS-генератор -->
+    <h2>Частина 2: CSS-генератор (border-radius, background-repeat, background-size)</h2>
+    <div class="generator">
+        <!-- Border-radius sliders -->
+        <div class="slider-row">
+            <label>Border-radius Top-Left (px):</label>
+            <input type="range" id="rtl" min="0" max="100" value="0">
+            <input type="number" id="rtlNum" min="0" max="100" value="0">
+        </div>
+        <div class="slider-row">
+            <label>Border-radius Top-Right (px):</label>
+            <input type="range" id="rtr" min="0" max="100" value="0">
+            <input type="number" id="rtrNum" min="0" max="100" value="0">
+        </div>
+        <div class="slider-row">
+            <label>Border-radius Bottom-Right (px):</label>
+            <input type="range" id="rbr" min="0" max="100" value="0">
+            <input type="number" id="rbrNum" min="0" max="100" value="0">
+        </div>
+        <div class="slider-row">
+            <label>Border-radius Bottom-Left (px):</label>
+            <input type="range" id="rbl" min="0" max="100" value="0">
+            <input type="number" id="rblNum" min="0" max="100" value="0">
+        </div>
+
+        <!-- Background-repeat select -->
+        <div class="slider-row">
+            <label>Background-repeat:</label>
+            <select id="bgRepeat">
+                <option value="repeat">repeat</option>
+                <option value="no-repeat">no-repeat</option>
+                <option value="repeat-x">repeat-x</option>
+                <option value="repeat-y">repeat-y</option>
+                <option value="space">space</option>
+                <option value="round">round</option>
+            </select>
+        </div>
+
+        <!-- Background-size inputs -->
+        <div class="slider-row">
+            <label>Background-size Width (px/%):</label>
+            <input type="text" id="bgSizeWidth" value="100%" placeholder="e.g., 100px or 50%">
+        </div>
+        <div class="slider-row">
+            <label>Background-size Height (px/%):</label>
+            <input type="text" id="bgSizeHeight" value="100%" placeholder="e.g., 100px or 50%">
+        </div>
+
+        <!-- Preview -->
+        <div class="preview" id="preview"></div>
+
+        <!-- CSS Output -->
+        <label>CSS-код:</label>
+        <textarea id="cssOutput" readonly></textarea>
+    </div>
+
+    <script type="module">
+        // Частина 1: Вкладки
+        document.addEventListener('DOMContentLoaded', () => {
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tabContent');
+
+            // Приховати всі вкладки на завантаженні
+            function hideTabsContent() {
+                tabContents.forEach(content => {
+                    content.classList.add('hide');
+                    content.classList.remove('show');
+                });
+                tabs.forEach(tab => tab.classList.remove('whiteborder'));
+            }
+
+            // Показати вибрану вкладку
+            function showTabContent(index) {
+                hideTabsContent();
+                tabContents[index].classList.remove('hide');
+                tabContents[index].classList.add('show');
+                tabs[index].classList.add('whiteborder');
+            }
+
+            // Обробка кліку на вкладку
+            document.getElementById('tabs').addEventListener('click', (e) => {
+                if (e.target.classList.contains('tab')) {
+                    tabs.forEach((tab, index) => {
+                        if (tab === e.target) {
+                            showTabContent(index);
+                        }
+                    });
+                }
+            });
+            // Приховати всі на старті
+            hideTabsContent();
+            showTabContent(0); // Показати першу за замовчуванням
+        });
+        // Частина 2: CSS-генератор
+        function updateSlider(sliderId, value) {
+            const slider = document.getElementById(sliderId);
+            const numInput = document.getElementById(sliderId + 'Num');
+            slider.value = value;
+            numInput.value = value;
+            generateCSS();
+        }
+
+        function generateCSS() {
+            // Отримати значення
+            const rtl = document.getElementById('rtl').value;
+            const rtr = document.getElementById('rtr').value;
+            const rbr = document.getElementById('rbr').value;
+            const rbl = document.getElementById('rbl').value;
+            const bgRepeat = document.getElementById('bgRepeat').value;
+            const bgSizeWidth = document.getElementById('bgSizeWidth').value;
+            const bgSizeHeight = document.getElementById('bgSizeHeight').value;
+
+            // Застосувати до preview
+            const preview = document.getElementById('preview');
+            preview.style.borderRadius = `${rtl}px ${rtr}px ${rbr}px ${rbl}px`;
+            preview.style.backgroundRepeat = bgRepeat;
+            preview.style.backgroundSize = `${bgSizeWidth} ${bgSizeHeight}`;
+
+            // Синхронізувати number inputs
+            document.getElementById('rtlNum').value = rtl;
+            document.getElementById('rtrNum').value = rtr;
+            document.getElementById('rbrNum').value = rbr;
+            document.getElementById('rblNum').value = rbl;
+
+            // Генерувати CSS-код
+            const cssCode = `.preview {
+    border-radius: ${rtl}px ${rtr}px ${rbr}px ${rbl}px;
+    background-repeat: ${bgRepeat};
+    background-size: ${bgSizeWidth} ${bgSizeHeight};
+}`;
+
+            document.getElementById('cssOutput').value = cssCode;
+        }
+
+        // Ініціалізація подій для генератора
+        document.addEventListener('DOMContentLoaded', () => {
+            // Sliders oninput
+            ['rtl', 'rtr', 'rbr', 'rbl'].forEach(id => {
+                document.getElementById(id).addEventListener('input', generateCSS);
+            });
+
+            // Number inputs onchange
+            ['rtlNum', 'rtrNum', 'rbrNum', 'rblNum'].forEach(id => {
+                document.getElementById(id).addEventListener('change', (e) => {
+                    updateSlider(id.replace('Num', ''), e.target.value);
+                });
+            });
+
+            // Select and text inputs onchange
+            document.getElementById('bgRepeat').addEventListener('change', generateCSS);
+            ['bgSizeWidth', 'bgSizeHeight'].forEach(id => {
+                document.getElementById(id).addEventListener('input', generateCSS);
+            });
+
+            // Початковий виклик
+            generateCSS();
+        });
+    </script>
+</body>
+</html>

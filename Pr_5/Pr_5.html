@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Практична робота №5: Простий ToDo List</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 600px; 
+            margin: 0 auto; 
+            padding: 20px; 
+            background-color: #f4f4f4; 
+        }
+        h1 { text-align: center; color: #333; }
+        #taskInput { 
+            width: 70%; 
+            padding: 10px; 
+            font-size: 16px; 
+            border: 1px solid #ccc; 
+            border-radius: 4px; 
+        }
+        #addBtn { 
+            padding: 10px 15px; 
+            font-size: 16px; 
+            background-color: #4CAF50; 
+            color: white; 
+            border: none; 
+            border-radius: 4px; 
+            cursor: pointer; 
+        }
+        #addBtn:hover { background-color: #45a049; }
+        ul { list-style-type: none; padding: 0; }
+        li { 
+            background: white; 
+            margin: 10px 0; 
+            padding: 15px; 
+            border-radius: 4px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+            display: flex; 
+            align-items: center; 
+            position: relative; 
+        }
+        li.completed { 
+            text-decoration: line-through; 
+            opacity: 0.6; 
+            background-color: #e0e0e0; 
+        }
+        li input[type="checkbox"] { margin-right: 10px; }
+        li input[type="text"] { 
+            flex: 1; 
+            border: none; 
+            background: transparent; 
+            font-size: inherit; 
+            margin-right: 10px; 
+        }
+        li .delete { 
+            background: #f44336; 
+            color: white; 
+            border: none; 
+            padding: 5px 10px; 
+            border-radius: 50%; 
+            cursor: pointer; 
+            font-size: 16px; 
+        }
+        li .delete:hover { background: #da190b; }
+        .date { font-size: 12px; color: #888; margin-left: auto; margin-right: 10px; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <h1>ToDo List</h1>
+    <div>
+        <input type="text" id="taskInput" placeholder="Додайте нове завдання..." onkeypress="handleEnter(event)">
+        <button id="addBtn" onclick="addTask()">Додати</button>
+    </div>
+    <ul id="taskList"></ul>
+
+    <script>
+        // Завантажити завдання з localStorage
+        let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+
+        // Функція додавання завдання
+        function addTask() {
+            const input = document.getElementById('taskInput');
+            const text = input.value.trim();
+            if (text === '') return;
+
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('uk-UA', { day: '2-digit', month: '2-digit', year: '2-digit' });
+            const timeStr = now.toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' });
+            const fullDate = `${dateStr}, ${timeStr}`;
+
+            tasks.unshift({ text, date: fullDate, completed: false }); // Додати на початок
+            input.value = '';
+            saveTasks();
+            renderTasks();
+        }
+
+        // Обробка Enter у input
+        function handleEnter(event) {
+            if (event.key === 'Enter') {
+                addTask();
+            }
+        }
+
+        // Рендер списку завдань
+        function renderTasks() {
+            const list = document.getElementById('taskList');
+            list.innerHTML = '';
+            tasks.forEach((task, index) => {
+                const li = document.createElement('li');
+                li.className = task.completed ? 'completed' : '';
+
+                // Checkbox (зникає при виконанні)
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.checked = task.completed;
+                checkbox.onclick = () => toggleComplete(index);
+                if (task.completed) checkbox.classList.add('hidden');
+
+                // Текст завдання (редагований)
+                const taskText = document.createElement('span');
+                taskText.textContent = task.text;
+                taskText.ondblclick = () => editTask(index);
+                taskText.contentEditable = false; // Початково не редагується
+
+                // Дата
+                const dateSpan = document.createElement('span');
+                dateSpan.className = 'date';
+                dateSpan.textContent = task.date;
+
+                // Кнопка видалення
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'delete';
+                deleteBtn.textContent = '×';
+                deleteBtn.onclick = () => deleteTask(index);
+
+                li.appendChild(checkbox);
+                li.appendChild(taskText);
+                li.appendChild(dateSpan);
+                li.appendChild(deleteBtn);
+                list.appendChild(li);
+            });
+        }
+
+        // Перемикання статусу (виконано/невиконано)
+        function toggleComplete(index) {
+            tasks[index].completed = !tasks[index].completed;
+            saveTasks();
+            renderTasks();
+        }
+
+        // Видалення завдання
+        function deleteTask(index) {
+            tasks.splice(index, 1);
+            saveTasks();
+            renderTasks();
+        }
+
+        // Редагування завдання
+        function editTask(index) {
+            const li = document.querySelectorAll('#taskList li')[index];
+            const taskText = li.querySelector('span'); // Початковий текст
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = taskText.textContent;
+            input.style.flex = '1';
+            input.onkeypress = (e) => {
+                if (e.key === 'Enter') {
+                    tasks[index].text = input.value.trim();
+                    if (tasks[index].text === '') {
+                        deleteTask(index); // Видалити, якщо порожнє
+                        return;
+                    }
+                    saveTasks();
+                    renderTasks();
+                }
+            };
+            taskText.replaceWith(input);
+            input.focus();
+            input.onblur = () => { // Вийти з редагування при втраті фокусу
+                tasks[index].text = input.value.trim();
+                if (tasks[index].text === '') deleteTask(index);
+                else saveTasks();
+                renderTasks();
+            };
+        }
+
+        // Збереження в localStorage
+        function saveTasks() {
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+        }
+
+        // Ініціалізація
+        renderTasks();
+    </script>
+</body>
+</html>
