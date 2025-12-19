@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Перевірка числа в input</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        input { padding: 10px; font-size: 16px; border: 2px solid #ccc; border-radius: 4px; }
+        /* Початковий стиль */
+        input:focus { border-color: #4CAF50; } /* Підсвічування при фокусі */
+    </style>
+</head>
+<body>
+    <h1>Введіть число (1-100)</h1>
+    <p>Введіть число в поле нижче. При втраті фокусу (клік поза полем) перевіриться: 1-100 — зелений фон, інакше — червоний.</p>
+    <input type="number" id="myInput" placeholder="Введіть число від 1 до 100" min="1" max="100">
+    <p id="message" style="color: #666; margin-top: 10px;">Результат з'явиться тут.</p>
+
+    <script>
+        // Отримуємо елемент input
+        const input = document.getElementById('myInput');
+        const message = document.getElementById('message');
+
+        // Подія blur: викликається при втраті фокусу
+        input.addEventListener('blur', function() {
+            const value = parseFloat(this.value); // Перетворюємо введене в число
+
+            // Перевірка: чи число, чи в межах 1-100
+            if (isNaN(value) || value < 1 || value > 100) {
+                // Некоректне: червоний фон
+                this.style.backgroundColor = 'red';
+                this.style.color = 'white'; // Текст білий для видимості
+                message.textContent = 'Помилка: Число повинно бути від 1 до 100!';
+                message.style.color = 'red';
+            } else {
+                // Коректне: зелений фон
+                this.style.backgroundColor = 'lightgreen';
+                this.style.color = 'black'; // Текст чорний
+                message.textContent = `OK: Число ${value} в межах 1-100!`;
+                message.style.color = 'green';
+            }
+        });
+
+        // Опціонально: скидання фону при фокусі
+        input.addEventListener('focus', function() {
+            this.style.backgroundColor = ''; // Скидаємо колір
+            this.style.color = '';
+            message.textContent = 'Введіть число від 1 до 100';
+            message.style.color = '#666';
+        });
+    </script>
+</body>
+</html>
